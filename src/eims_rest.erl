@@ -21,7 +21,7 @@
 -define(URI_TRADE_VOLUMES, "/api/v2/public/get_trade_volumes").
 -define(URI_STATS, "/api/v2/private/get_stats").
 
--define(REDIRECT_URI, "/eims/server_auth").
+-define(REDIRECT_URI, "server_auth").
 -define(REDIRECT_CLIENT, <<"/react.html?">>).
 
 -define(HTTP_TIMEOUT, 5000).
@@ -58,7 +58,10 @@ host(#{} = UriMap, N) ->
 host() ->
 	uri_string:normalize(host(#{path => <<"react.html">>})). %% This function didn't work for example I use it for second redirect
 redirect_uri() ->
-	uri_string:normalize(host(#{path => ?REDIRECT_URI}, 2)).
+%%	{ok, Config} = file:consult("ejabberd.yml"),
+	Modules = ejabberd_config:get_option(modules),
+	RedirectUri = proplists:get_value(redirect_uri, proplists:get_value(mod_http_eims_api, Modules)),
+	uri_string:normalize(host(#{path => RedirectUri}, 2)).
 
 auth_uri(State, Scope) ->
 	Host = eims:host(),

@@ -1,6 +1,6 @@
 %%%-------------------------------------------------------------------
 %%% @doc
-%%% some EIMS specific REST commands
+%%%Some EIMS specific REST commands
 %%% @end
 %%%-------------------------------------------------------------------
 -module(mod_http_eims_api).
@@ -61,6 +61,14 @@ start(_Host, _Opts) ->
 
 stop(_Host) ->
     ok.
+
+mod_options(_Host) ->
+    [
+        {redirect_uri, "/eims/server_auth"}
+    ].
+
+mod_opt_type(redirect_uri) ->
+    econf:string().
 
 reload(_Host, _NewOpts, _OldOpts) ->
     ok.
@@ -355,9 +363,6 @@ hide_sensitive_args(Args=[_H|_T]) ->
         Args);
 hide_sensitive_args(NonListArgs) ->
     NonListArgs.
-
-mod_options(_) ->
-    [].
 
 mod_doc() ->
     #{desc =>

@@ -1,0 +1,481 @@
+###
+###              ejabberd configuration file
+###
+### The parameters used in this configuration file are explained at
+###
+###       https://docs.ejabberd.im/admin/configuration
+###
+### The configuration file is written in YAML.
+### *******************************************************
+### *******           !!! WARNING !!!               *******
+### *******     YAML IS INDENTATION SENSITIVE       *******
+### ******* MAKE SURE YOU INDENT SECTIONS CORRECTLY *******
+### *******************************************************
+### Refer to http://en.wikipedia.org/wiki/YAML for the brief description.
+###
+### this is configuration for debugging EIMS chat service locally
+### MUST NOT BE USED IN PRODUCTION
+
+hosts:
+  - localhost
+
+host_config:
+  localhost:
+    auth_method:
+      - eims
+      - internal
+    auth_use_cache: false
+
+loglevel: info
+
+auth_opts:
+  host: "dummy_host"
+  connection_opts:
+    "localhost": "test.iservice.com"
+    "chattest.localhost": "localhost"
+    "chat.localhost": "localhost"
+    "client_id": "N3C2Bo80"
+    "client_secret": "8yH9PSZgtY24NQdM7jQtIljgckUKgufJvC1lcZRqMZc"
+
+
+## If you already have certificates, list them here
+#certfiles:
+#  - /etc/letsencrypt/cert.pem
+#  - /etc/letsencrypt/cacert.pem
+#certfiles:
+#   - /etc/letsencrypt/localhost.crt
+#   - /etc/letsencrypt/localhost.key
+
+
+listen:
+  -
+    port: 5222
+    ip: "::"
+    module: ejabberd_c2s
+#    protocol_options:
+#      - "no_sslv2"
+#      - "no_sslv3"
+#      - "no_tlsv1"
+#      - "no_tlsv1_1"
+    max_stanza_size: 262144
+    shaper: c2s_shaper
+    access: c2s
+#    starttls: true
+    starttls_required: false
+#    tls_compression: false
+  -
+    port: 5269
+    ip: "::"
+    module: ejabberd_s2s_in
+    max_stanza_size: 524288
+  -
+    port: 5443
+    ip: "::"
+    module: ejabberd_http
+    request_handlers:
+      /eims: mod_http_eims_api
+      /static: mod_http_fileserver
+      /admin: ejabberd_web_admin
+      /api: mod_http_api
+      /bosh: mod_bosh
+      /captcha: ejabberd_captcha
+      /upload: mod_http_upload
+      /ws: ejabberd_http_ws
+      /.well-known/host-meta: mod_host_meta
+      /.well-known/host-meta.json: mod_host_meta
+      /mdrfq: eims_ws
+  -
+    port: 5280
+    ip: "::"
+    module: ejabberd_http
+    #use_proxy_protocol: true
+    request_handlers:
+      /.well-known/acme-challenge: ejabberd_acme
+      /api: mod_http_api
+      /eims: mod_http_eims_api
+      /static: mod_http_fileserver
+      /admin: ejabberd_web_admin
+      /bosh: mod_bosh
+      /ws: ejabberd_http_ws
+      /upload: mod_http_upload
+#      /conversejs: mod_conversejs
+      /oauth: ejabberd_oauth
+#  -
+#    port: 5347
+#    ip: "127.0.0.1"
+#    module: ejabberd_service
+#    access: all
+#    shaper_rule: fast
+#    #check_from: false
+#    hosts:
+#      "slidge.localhost":
+#        password: "secret"
+    #shaper: none
+  -
+    port: 8888
+    ip: "127.0.0.1"
+    module: ejabberd_service
+    access: all
+    hosts:
+#      "eims.localhost":
+#        password: "secret"
+      "tg.localhost":
+        password: "secret"
+      "test.tg.localhost":
+        password: "secret"
+  -
+    port: 1883
+    ip: "::"
+    module: mod_mqtt
+    backlog: 1000
+
+oauth_expire: 36000
+oauth_access: all
+websocket_ping_interval: 50
+websocket_timeout: 55
+registration_timeout: infinity
+
+s2s_use_starttls: false
+
+acl:
+  local:
+    user_regexp: ""
+  loopback:
+    ip:
+      - 127.0.0.0/8
+      - ::1/128
+  # users that are coming from website have whale. prefix
+  not_www:
+    user_regexp:
+      - "^(?!whale\\.).+": "localhost"
+  rfq:
+    user_regexp:
+      - "^(?!rfq\\.).+": "conference.localhost"
+    user:
+      - "test" : "localhost"
+  manager:
+    user_regexp:
+      - "^(?!rfq\\.).+": "conference.localhost"
+    user:
+      - "test" : "localhost"
+#      - "qomputer" : "localhost"
+#      # - "tg.localhost"
+#      # - "EIMSBot" : "localhost"
+  admin:
+    user:
+      - "maarten": "localhost"
+      - "herman" : "localhost"
+      - "andrew" : "localhost"
+      - "admin"  : "localhost"
+      - "igor"   : "localhost"
+  ebridge_tg:
+     server:
+       - "tg.localhost"
+       - "test.tg.localhost"
+
+
+access_rules:
+  eims_admin:
+    allow: manager
+#      - ebridge_tg
+    deny: all
+  local:
+    allow: local
+#      - local
+#      - ebridge_tg
+  c2s:
+    deny: blocked
+    allow: all
+  s2s:
+    deny: blocked
+    allow: all
+  announce:
+    allow: admin
+  configure:
+    allow: admin
+  muc_create:
+    allow: admin
+    #allow: all
+  non_whale:
+    allow: not_www
+    deny: all
+  pubsub_createnode:
+    allow: local
+  trusted_network:
+    allow: loopback
+  register:
+    deny: all
+  non_strangers:
+    allow: rfq
+
+api_permissions:
+  "console commands":
+    from:
+      - ejabberd_ctl
+    who: all
+    what: "*"
+  "admin access":
+    who:
+      oauth:
+        scope: "ejabberd:admin"
+        access:
+          allow:
+            - acl: loopback
+            - acl: admin
+    what:
+      - "*"
+      - "!stop"
+      - "!start"
+  "public commands":
+    who:
+      ip: 127.0.0.1/8
+    what:
+      - status
+      - connected_users_number
+
+shaper:
+  normal:
+    rate: 3000
+    burst_size: 20000
+  fast: 100000
+
+shaper_rules:
+  max_user_sessions: 10
+  max_user_offline_messages:
+    5000: admin
+    100: all
+  c2s_shaper:
+    none: admin
+    normal: all
+  s2s_shaper: fast
+
+##
+## PostgreSQL server:
+##
+sql_type: pgsql
+sql_server: "localhost"
+sql_database: "ejabberd"
+sql_username: "ubuntu"
+sql_password: "yourpass"
+## If you want to specify the port:
+sql_port: 5432
+# auth_method: [sql]
+
+
+modules:
+  mod_adhoc: {}
+  mod_eims_admin:
+    # Enable OAuth2 dialog
+    oauth_dialog: false
+    # Web Socket eims port by default 443
+    ws_port: 443
+    # Web Socket outside (here integrated service) resource by default "/ws/api/v2"
+    ws_resource: "/ws/api/v2"
+    # system bot nick
+    bot_nick: "EIMSBot"
+    # component bot
+    bot_component: "tg.localhost"
+    #FIX filters
+    fix_filters:
+      default: ".*"
+      LegSymbol: "[\\w\\._-]+"
+      Parties: "[\\w\\._-]+"
+#  mod_eims:
+#    testnet: true # default true
+  mod_adhoc_eims: {}
+  mod_moderate: {}
+  mod_admin_extra: {}
+  mod_announce:
+    access: announce
+    cache_life_time: 1
+  mod_avatar: {}
+  mod_blocking: {}
+#  mod_block_strangers:
+#    access: non_strangers
+#    allow_local_users: false
+  mod_bosh: {}
+#  mod_host_meta:
+#    bosh_service_url: "https://@HOST@:5443/bosh"
+#    websocket_url: "ws://@HOST@:5443/ws"
+  mod_caps: {}
+  mod_carboncopy: {}
+  mod_client_state: {}
+  mod_configure: {}
+  mod_disco: {}
+#    extra_domains:
+#      - "conference.localhost"
+  mod_fail2ban:
+    access: trusted_network
+    c2s_max_auth_failures: 30
+    c2s_auth_ban_lifetime: 100
+  mod_http_fileserver:
+    docroot: /Path/eims/ejabberd/eims/www
+    accesslog: /Path/eims/ejabberd/eims/log/access.log
+    directory_indices:
+      - index.html
+      - main.htm
+    custom_headers:
+      X-Powered-By: Erlang/OTP
+      X-Fry: "huahahaha"
+    content_types:
+      .ogg: audio/ogg
+      .png: image/png
+      .jpg: undefined
+      .js: application/javascript
+      .css: text/css
+    default_content_type: text/html
+  mod_http_api:
+    default_version: 2
+  mod_http_eims_api:
+    redirect_uri: "/iservice/server_auth"
+  mod_http_upload:
+    #name: "Upload"
+    docroot: /Path/eims/pv/upload
+    put_url: http://@HOST@:5443/upload
+    get_url: https://@HOST@/upload
+#    jid_in_url: node
+    file_mode: "0644"
+    dir_mode: "0755"
+    secret_length: 20
+    #thumbnail: true
+    custom_headers:
+      "Access-Control-Allow-Origin": "*"
+      "Access-Control-Allow-Methods": "GET, PUT, OPTIONS, DELETE"
+      "Access-Control-Allow-Headers": "Authorization, Content-Type, Origin, X-Requested-With"
+      "Access-Control-Allow-Credentials": "true"
+    access:
+      - allow: local
+      - allow: ebridge_tg
+  mod_last: {}
+  mod_mam:
+    ## Mnesia is limited to 2GB, better to use an SQL backend
+    ## For small servers SQLite is a good fit and is very easy
+    ## to configure. Uncomment this when you have SQL configured:
+    db_type: sql
+    assume_mam_usage: true
+    default: always
+    request_activates_archiving: false       ##true|false
+    cache_size: 1000
+    cache_life_time: 300
+    #user_mucsub_from_muc_archive: true
+  mod_mqtt: {}
+  mod_muc:
+    host: "conference.@HOST@"
+    max_users: 50000
+    access:
+      - allow
+    access_admin:
+      - allow: admin
+    access_create: muc_create
+    access_persistent: muc_create
+    access_register: non_whale
+    access_mam:
+      - allow
+    default_room_options:
+      persistent: true
+      mam: true
+      members_by_default: true
+      allow_subscription: true
+      logging: false
+      max_users: 50000
+      allow_query_users: true
+      allow_visitor_nickchange: false
+      allow_visitor_status: false
+      allow_change_subj: false
+      allowpm: anyone
+      public: true
+    history_size: 200
+    min_message_interval: 3
+  mod_muc_admin:
+    subscribe_room_many_max_users: 1000
+#  mod_conversejs:
+#    websocket_url:  "ws://@HOST@:5443/ws"
+#    conversejs_options:
+#      auto_away: 30
+#      clear_cache_on_logout: true
+#      i18n: "pt"
+##      locked_domain: "@HOST@"
+#      message_archiving: always
+#      theme: dracula
+#  mod_muc_log:
+#    access_log: everybody
+#    dirtype: subdirs0
+
+#    file_format: html
+#    cssfile: "/Path/eims/ejabberd/eims/www/log/muc_log.css"
+#    spam_prevention: true
+#    dirname: room_jid
+#    timezone: universal
+#    outdir: "/Path/eims/ejjabberd/eims/www/log"
+  mod_offline:
+    access_max_user_messages: max_user_offline_messages
+    use_mam_for_storage: false
+    cache_life_time: 3000
+    store_empty_body: unless_chat_state
+  mod_ping:
+    send_pings: false
+    ping_interval: 21
+    ping_ack_timeout: 30
+    timeout_action: kill
+  mod_privacy: {}
+  mod_private: {}
+  mod_proxy65:
+    access: local
+    max_connections: 5
+  mod_pubsub:
+    access_createnode: pubsub_createnode
+    plugins:
+      - flat
+      - pep
+    force_node_config:
+      ## Avoid buggy clients to make their bookmarks public
+      storage:bookmarks:
+        access_model: whitelist
+  mod_push: {}
+  mod_push_keepalive: {}
+  mod_register:
+    ## Only accept registration requests from the "trusted"
+    ## network (see access_rules section above).
+    ## Think twice before enabling registration from any
+    ## address. See the Jabber SPAM Manifesto for details:
+    ## https://github.com/ge0rg/jabber-spam-fighting-manifesto
+    ip_access: trusted_network
+#  mod_privilege:
+#    roster:
+#      both: all
+#    message:
+#      outgoing: all
+#    presence:
+#      managed_entity: all
+  mod_roster:
+    versioning: true
+  mod_s2s_dialback: {}
+  mod_shared_roster:
+    db_type: mnesia
+  mod_stream_mgmt:
+    resend_on_timeout: true
+    resume_timeout: 10
+  mod_vcard: {}
+  mod_eims_filter:
+    except_from: ["admin","iservice","iservice.eng"]
+    filter_regex: ["http:\\/\\/[^\\s]*", "https:\\/\\/[^\\s]*", "www\\.[^\\s]*", "www\\.[^\\s]*", "[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}" ]
+    except_replace: [ "https:\\/\\/[a-zA-Z1-9\\.]*\\.iservice\\.com", "https://t\\.me/iservice", "https://www.reddit.com/r/iserviceExchange/",
+                     "https://www.linkedin.com/company/Iservice", "https://twitter.com/Iserviceexchange", "https://t.me/ru_iservice",
+                     "https://t.me/cn_iservice", "https://t.me/IserviceOfficialChat","https://iservice.zendesk.com/hc/en-us",
+                      "support@iservice\\.com", "compliance@iservice\\.com" ]
+  mod_pottymouth:
+    check_fun: check_banword_only #or check_banword - for old case
+    blacklists:
+      default: /Path/eims/ejabberd/etc/blacklist_en.txt #replace by path to blacklist
+      en: /Path/eims/ejabberd/etc/blacklist_en.txt
+    charmaps:
+      default: /Path/eims/ejabberd/etc/charmap_en.txt
+      en: /Path/eims/ejabberd/etc/charmap_en.txt
+  mod_vcard_xupdate: {}
+  mod_version:
+    show_os: false
+
+### Local Variables:
+### mode: yaml
+### End:
+### vim: set filetype=yaml tabstop=8
