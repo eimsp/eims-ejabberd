@@ -34,8 +34,8 @@ auth_opts:
     "localhost": "test.iservice.com"
     "chattest.localhost": "localhost"
     "chat.localhost": "localhost"
-    "client_id": "N3C2Bo80"
-    "client_secret": "8yH9PSZgtY24NQdM7jQtIljgckUKgufJvC1lcZRqMZc"
+    "client_id": "Client_id_from_test.iservice.com"
+    "client_secret": "Client_secret_from_test.iservice.com"
 
 
 ## If you already have certificates, list them here
