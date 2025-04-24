@@ -31,11 +31,11 @@ loglevel: info
 auth_opts:
   host: "dummy_host"
   connection_opts:
-    "localhost": "test.iservice.com"
+    "localhost": "iservice.com"
     "chattest.localhost": "localhost"
     "chat.localhost": "localhost"
-    "client_id": "Client_id_from_test.iservice.com"
-    "client_secret": "Client_secret_from_test.iservice.com"
+    "client_id": "Client_id_from_iservice.com"
+    "client_secret": "Client_secret_from_iservice.com"
 
 
 ## If you already have certificates, list them here

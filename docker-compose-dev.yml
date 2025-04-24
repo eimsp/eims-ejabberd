@@ -1,0 +1,24 @@
+version: "3.3"
+services:
+  db:
+    image: qomputer/psql:145
+    network_mode: bridge
+    user: "1000:1000"
+    environment:
+      POSTGRES_DB: ejabberd
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: yourpasswd
+      APP_DB_USER: ubuntu
+      APP_DB_PASS: yourpasswd
+      MDNS_HOSTNAME: db.local
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+        - ./tools/pg.sql:/docker-entrypoint-initdb.d/pg.sql
+        - ./tools/init.sh:/docker-entrypoint-initdb.d/init.sh
+        - ./tools/permissions.sh:/permissions.sh
+        - ../database:/var/lib/postgresql/data
+#    command: usermod -u 1000 postgres
+    ports:
+        - "127.0.0.1:5432:5432"
+
+

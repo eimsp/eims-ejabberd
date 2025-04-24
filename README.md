@@ -1,7 +1,7 @@
 # Ejabberd modules and demo client for EIMS
 
 * "Converse.js" xmpp-client is used for UI demo
-* "CJAC" corporate xmpp-client with administration panel can be got from https://github.com/eimsp/cjac
+* "CJaC" (Corporate Jabber Client) corporate xmpp-client with an administration panel can be got from https://github.com/eimsp/cjac
 
 ## Installation
 

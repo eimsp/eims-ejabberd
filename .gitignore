@@ -1,0 +1,5 @@
+/ebin/
+/log/
+/www/
+/test/*.beam
+/test/*.ctc

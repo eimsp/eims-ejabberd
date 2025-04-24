@@ -1,0 +1,1 @@
+summary: "EIMS - ejabberd with additional functions for corporate goals"
