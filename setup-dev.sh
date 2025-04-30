@@ -1,6 +1,15 @@
 #!/bin/sh
+# This script is used to prepare the development environment for ejabberd.
+# To make hard-link to eims-ejabberd/www in dir ejabberd/eims/.
+# To copy from eims-ejabberd/etc:
+#   - script start-dev.sh to ejabberd dir (ejabberd),
+#   - sys.config  to ejabberd/rel/ejabberd.yml,
+
+
+
+
 echo -n "===> Preparing dev configuration files: "
-# Start from EIMS dir
+# Start from eims-ejabberd dir
 EIMS_DIR=`pwd`
 
 cd ../ejabberd
@@ -34,11 +43,27 @@ if [ ! -d "./etc" ]; then
     #&& cp -f $EIMS_DIR/etc/ejabberd.yml ./etc/ejabberd/ejabberd.yml
 fi
 
+
+
 cp -rf $EIMS_DIR/include ./
-#cp -f $EIMS_DIR/etc/rebar.config rebar.config
-#cp -f $EIMS_DIR/etc/sys.config ./rel/sys.config
+cp -f $EIMS_DIR/etc/blacklist_en.txt ./etc/blacklist_en.txt
+cp -f $EIMS_DIR/etc/charmap ./etc/charmap_en.txt
+cp -f $EIMS_DIR/etc/sys.config ./rel/sys.config
 cp -rf $EIMS_DIR/priv ./
 cp -f $EIMS_DIR/src/ejabberd.app.src.script ./src/ejabberd.app.src.script
+
+cd ..
+
+if [ ! -d "./pv/upload" ]; then
+    echo -n "pv/upload" \
+    && mkdir -p pv/upload # It needs for upload dir
+fi
+
+if [ ! -d "./database" ]; then
+    echo -n "database" \
+    && mkdir database # It needs for DataBase dir
+fi
+
 
 #PWD_DIR=`pwd`
 #REL_DIR=$PWD_DIR/_build/dev/rel/ejabberd

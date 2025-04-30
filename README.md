@@ -6,30 +6,28 @@
 ## Installation
 
 1. Create root dir of project (for example eims) and "git clone https://github.com/eimsp/eims-ejabberd.git" in that dir.
-2. Install erlang, ejabberd (to eims/ejabberd), install necessary additional 3rd-party modules for ejabberd (on admin discretion)
-3. Use yml-samples from ./eims/etc to configure ejabberd for your environment
-4. Run setup-dev.sh script to create symlinks and copy necessary files to ejabberd dir (./ejabberd).
-5. Register "chat" application in Integrated Service backend. Possibly, chat application needs special permission to not show "allow/deny" dialog.
-6. Install Nginx, ./www is a dir for Nginx with Converse.js (see https://github.com/eimsp/docker-eims/-/blob/main/conf/eims.conf?ref_type=heads)
+2. Install erlang , ejabberd (to eims/ejabberd), install necessary additional 3rd-party modules for ejabberd (on admin discretion)
+3. Use yml-sample (ejabberd.yml) from eims/eims-ejabberd/etc to configure ejabberd for your environment
+4. Run ./eims/eims-ejabberd/setup-dev.sh script to create symlinks and copy necessary files to ejabberd dir (./ejabberd).
+5. Register "chat" application in the backend of Integrated Service. Possibly, chat application needs special permission to not show "allow/deny" dialog.
+6. Install Nginx with eims.conf (from eims/eims-ejabberd/etc) in dir /etc/nginx/conf.d, eims/eims-ejabberd/www is a dir for Nginx with Converse.js
+7. Create docker image using command "docker build --no-cache -t eims/psql:145" in dir ./eims-ejabberd.
 
-### Use ejabberd with Integrated Service locally 
+### Use ejabberd with Integrated Service locally in development processes
 
-Create user for example "ejabberd" in system.
-Make hard-link to ./eims in dir ~/.ejabberd-modules/sources/ .
+Create user with uid=1000, gid=1000 in your system, then you can correct "Path" in ejabberd.yaml and
+copy sys.config to ejabberd/rel.
 
-You can setup ejabberd without installing in your system:
+You can set up ejabberd without installing in your system:
 
     ./configure --with-rebar=rebar3 --enable-pgsql
     make dev
 
-Make hard-link to (or copy) ./eims/www in dir ./ejabberd/eims/.  
-Copy from ./eims/etc:  
-script start-dev.sh to ejabberd dir (./ejabberd), 
-ejabberd.yaml.development in ./ejabberd/conf/ejabberd.yaml and correct "Path" in ejabberd.yaml, 
-sys.config to ./ejabberd/rel. 
 
-Or use script./eims/setup-dev.sh and then you can correct "Path" in ejabberd.yaml.
-                               
+Start DBS:
+    Rename docker-compose-dev.yml to docker-compose.yml
+    docker-compose up -d
+
 Start application:  
 
     ./ejabberd/start-dev.sh     
@@ -37,25 +35,18 @@ Start application:
    
     ./ejabberd/rebar3 shell --name ejabberd@localhost      
  
-Alternatively
-Command line example for running ejabberd without install (please adjust to your paths before running):
-```shell script
-make
-EIMS_PROJECT_ROOT=~/dev 
-EJABBERD_CONFIG_PATH=$EIMS_PROJECT_ROOT/eims/etc/ejabberd.yml.development erl -pa ebin -pa deps/*/ebin -s ejabberd
-```
-
 Worth noting, ejabberd can download and install certificates from letsencrypt itself but then nginx must be configured properly to pass the challenge request to ejabberd 
 
 ## Chat application fields for your Integrated Service (iservice)
 
-* Name: chat
-* Domain: chat.iservice.com
-* URLs: https://chat.iservice.com/ for Converse.js
+* Name: iservice
+* Domain: iservice.com
+* URLs: https://iservice.com/api
+* Redirect URLs: https://localhost/iservice/server_auth 
 
-for local testing (config ./etc/ejabberd.yml.development, then ejabberd also handles http and nginx is not used), following fields can be used:
+for local testing (config etc/ejabberd.yml, then ejabberd also handles http  is not used), following fields can be used:
 * Name: chat
 * Domain: localhost
-* Redirect URLs: http://localhost:5280/ for Converse.js
+* URLs: https://localhost/ for Converse.js and https://localhost/cjac for CJaC
 
 

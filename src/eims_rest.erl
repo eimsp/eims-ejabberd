@@ -21,7 +21,7 @@
 -define(URI_TRADE_VOLUMES, "/api/v2/public/get_trade_volumes").
 -define(URI_STATS, "/api/v2/private/get_stats").
 
--define(REDIRECT_URI, "server_auth").
+%% -define(REDIRECT_URI, "server_auth").
 -define(REDIRECT_CLIENT, <<"/react.html?">>).
 
 -define(HTTP_TIMEOUT, 5000).

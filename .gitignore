@@ -1,5 +1,7 @@
-/ebin/
-/log/
-/www/
+/ebin
+/log
+!/www/.well-known
+/www/*
+/database
 /test/*.beam
 /test/*.ctc
