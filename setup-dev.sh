@@ -47,7 +47,7 @@ fi
 
 cp -rf $EIMS_DIR/include ./
 cp -f $EIMS_DIR/etc/blacklist_en.txt ./etc/blacklist_en.txt
-cp -f $EIMS_DIR/etc/charmap ./etc/charmap_en.txt
+cp -f $EIMS_DIR/etc/charmap_en.txt ./etc/charmap_en.txt
 cp -f $EIMS_DIR/etc/sys.config ./rel/sys.config
 cp -rf $EIMS_DIR/priv ./
 cp -f $EIMS_DIR/src/ejabberd.app.src.script ./src/ejabberd.app.src.script

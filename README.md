@@ -16,7 +16,7 @@ It is designed to be integrated with third-party systems (host service). EIMS in
 4. Run ./eims/eims-ejabberd/setup-dev.sh script to create symlinks and copy necessary files to ejabberd dir (./ejabberd).
 5. Register "chat" application in the backend of Integrated Service. Possibly, chat application needs special permission to not show "allow/deny" dialog.
 6. Install Nginx with eims.conf (from eims/eims-ejabberd/etc) in dir /etc/nginx/conf.d, eims/eims-ejabberd/www is a dir for Nginx with Converse.js
-7. Create docker image using command "docker build --no-cache -t eims/psql:145" in dir eims-ejabberd.
+7. Create docker image for PostgresDB using command "docker build --no-cache -t eims/psql:145" in dir eims-ejabberd.
 
 ### Use ejabberd with Host Service locally in development processes
 
@@ -39,8 +39,10 @@ Start application:
  or 
    
     ./ejabberd/rebar3 shell --name ejabberd@localhost      
- 
-Worth noting, ejabberd can download and install certificates from letsencrypt itself but then nginx must be configured properly to pass the challenge request to ejabberd 
+
+Nginx must be configured properly for ports 443 and 80 to pass the challenge request 
+to ejabberd. Worth noting, ejabberd can download and install certificates from 
+letsencrypt itself it is needed at a minimum for a production version.
 
 ##  Configuration EIMS for your Host Service (hservice)
 
@@ -51,7 +53,7 @@ Worth noting, ejabberd can download and install certificates from letsencrypt it
 * Redirect URLs: https://eims.domain/hservice/server_auth 
 
 for local testing (config etc/ejabberd.yml, then ejabberd also handles http  is not used), following params can be used:
-* Name: chat
+* Name: eims
 * Domain: localhost
 * URLs: https://localhost/ for Converse.js and https://localhost/cjac for CJaC
 * Integrayed Service URLs: https://hservice.com/api
