@@ -39,7 +39,7 @@ mod_options(_Host) -> [].
 
 init([]) ->
 	application:start(throttle),
-	throttle:setup(iservice_rate, 20, per_second),
+	throttle:setup(hservice_rate, 20, per_second),
 	create_tables(),
 	SupFlags = #{strategy => one_for_one,
 		intensity => 1000,
@@ -540,7 +540,7 @@ split(Subject, Deep, Default, Pattern, Acc) ->
 %% auth_opts:
 %%    connection_opts:
 %%      "localhost": "localhost:8082"
-%%      "chattest.iservice.com": "www.iservice.com"
+%%      "chattest.hservice.com": "www.hservice.com"
 connection_opts() ->
 	maps:from_list(proplists:get_value(connection_opts, ejabberd_option:auth_opts())).
 
@@ -577,7 +577,7 @@ check_sync_iserv(Fun) ->
 check_sync_iserv(_Fun, 0) ->
 	{error, overload};
 check_sync_iserv(Fun, Count) ->
-	case throttle:check(iservice_rate, iservice_request) of
+	case throttle:check(hservice_rate, hservice_request) of
 		rate_not_set -> {error, rate_not_set};
 		{ok, _, _} -> Fun();
 		{limit_exceeded, 0, DelayTime} ->
@@ -609,7 +609,7 @@ check_iserv_decorator({#jid{luser = User, lserver = Host}, _} = FullData, Fun) -
 		case ejabberd_sm:get_user_resources(User, Host) of
 			[] -> ok;
 			_ ->
-				case throttle:check(iservice_rate, iservice_request) of
+				case throttle:check(hservice_rate, hservice_request) of
 					{ok, _, _} -> Fun(Data);
 					{limit_exceeded, 0, DelayTime} ->
 						?dbg("limit_exceeded", []),
@@ -924,7 +924,7 @@ wait_for_list(Fun, Length, Counter, Interval) when is_integer(Counter), is_integ
 host() ->
 	hd(ejabberd_option:hosts()).
 
-iservice_host() ->
+hservice_host() ->
 	maps:get(host(), connection_opts()).
 
 muc_host() ->

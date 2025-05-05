@@ -605,7 +605,7 @@ eims_filter_story(Config) ->
 	RoomJid = do_test_room_jid(),
 	[AliceNick, BobNick] = [escalus_config:get_ct({escalus_users, U, nick}) || U <- [alice, bob]],
 	Link = <<"http://fake.com">>,
-	IServLink = <<"https://test.iservice.com">>,
+	IServLink = <<"https://test.hservice.com">>,
 	escalus:story(Config, [{alice, 1}, {bob, 1}],
 		fun(#client{jid = _AliceJid} = Alice,
 			#client{jid = _BobJid} = Bob) ->
@@ -1683,7 +1683,7 @@ do_request(Method, Request, HTTPOptions, []) ->
 		Res -> Res
 	end.
 
-%% S basic Reqiests to integrated service
+%% S basic Reqiests to host service
 do_request(#{path := "/api/v2/private/get_account_summary", query := [{"currency", Currency}, {"extended", "true"}]}, _Headers)
 	when Currency == "BTC"; Currency == "ETH" ->
 	Body = jiffy:encode(#{<<"result">> =>

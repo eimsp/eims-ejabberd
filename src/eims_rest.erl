@@ -187,7 +187,7 @@ auth_post(#{jid := UserJid, groupchat := MucJid, text := Txt}) ->
 		 _ -> ok
 	 end || {Jid, _Nick, _} <- mod_muc_admin:get_room_occupants(Room, RoomHost)];
 auth_post(#{jid := _UserJid, groupchat := _MucJid} = State) ->
-	auth_post(State#{text => <<"You successfully authorized with integrated service">>});
+	auth_post(State#{text => <<"You successfully authorized with host service">>});
 auth_post(_State) ->
 	ok.
 
@@ -268,7 +268,7 @@ get_trade_volumes_req(#jid{lserver = _Host} = Jid) ->
 	get_trade_volumes_req(Jid, <<"false">>).
 get_trade_volumes_req(#jid{lserver = _Host}, Extended) ->
 %%	check_request(get, Host, ?URI_TV, [], []).
-	check_request(get, {iserv_host, eims:iservice_host()}, ?URI_TRADE_VOLUMES, [{<<"extended">>, Extended}], []). %% TODO temporary. Get itegrated service host from ejabberd.yml
+	check_request(get, {iserv_host, eims:hservice_host()}, ?URI_TRADE_VOLUMES, [{<<"extended">>, Extended}], []). %% TODO temporary. Get itegrated service host from ejabberd.yml
 
 
 

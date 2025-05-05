@@ -1,1 +1,1 @@
-summary: "EIMS - ejabberd with additional functions for corporate goals"
+summary: " Extensible & Integrable Messaging System (EIMS) - ejabberd with additional functions for corporate goals"

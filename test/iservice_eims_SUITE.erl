@@ -1,4 +1,4 @@
--module(iservice_eims_SUITE).
+-module(hservice_eims_SUITE).
 -compile(export_all).
 
 -include_lib("escalus/include/escalus.hrl").

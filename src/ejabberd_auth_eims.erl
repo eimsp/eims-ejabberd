@@ -45,7 +45,7 @@ store_type(_) -> external.
 
 check_password(User, AuthzId, _Server, _Password) when AuthzId =/= <<>> andalso AuthzId =/= User ->
     {nocache, false};
-%% Add here check password for external integrated service
+%% Add here check password for external host service
 check_password(User, AuthzId, Server, <<"iserv-web-app;", Password/binary>>) ->
     case mod_adhoc_eims:is_banned(jid:make(User, Server)) of
         true -> {nocache, false};
@@ -84,7 +84,7 @@ do_check_password(undefined, _User, _Server) ->
 do_check_password(_OAuth2, undefined, _Server) ->
     false;
 
-%% Add here logic of check password for external integrated service
+%% Add here logic of check password for external host service
 do_check_password([_Host, Token, RefreshToken], User, Server) ->
     JID = jid:make(User, Server),
     case eims_rest:get_account_summary_req(JID, Token) of
@@ -194,7 +194,7 @@ failure(User, Server, Fun, Reason) ->
     {nocache, {error, db_failure}}.
 
 
-%% Add here logic of get token for external integrated service
+%% Add here logic of get token for external host service
 get_oauth2_host_token(Password, Server) ->
     HostApiHostMap =
         case eims:connection_opts() of
@@ -202,7 +202,7 @@ get_oauth2_host_token(Password, Server) ->
             M -> M
         end,
     ApiHost =
-        case binary_to_list(maps:get(Server, HostApiHostMap, eims:iservice_host())) of
+        case binary_to_list(maps:get(Server, HostApiHostMap, eims:hservice_host())) of
             "http" ++_ = H1 -> H1;
             H2 -> "https://" ++ H2
         end,

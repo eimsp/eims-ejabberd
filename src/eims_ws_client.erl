@@ -46,7 +46,7 @@
 %%%===================================================================
 start_link(Args) ->
 	WsOpts = [{K, gen_mod:get_module_opt(global, mod_eims_admin, V)} || {K, V} <- [{port, ws_port}, {resource, ws_resource}]],
-	connect([{host, eims:iservice_host()}, {ssl, true}] ++ WsOpts ++ Args).
+	connect([{host, eims:hservice_host()}, {ssl, true}] ++ WsOpts ++ Args).
 start_link() ->
 	start_link([]).
 

@@ -31,11 +31,11 @@ loglevel: info
 auth_opts:
   host: "dummy_host"
   connection_opts:
-    "localhost": "iservice.com"
+    "localhost": "hservice.com"
     "chattest.localhost": "localhost"
     "chat.localhost": "localhost"
-    "client_id": "Client_id_from_iservice.com"
-    "client_secret": "Client_secret_from_iservice.com"
+    "client_id": "Client_id_from_hservice.com"
+    "client_secret": "Client_secret_from_hservice.com"
 
 
 ## If you already have certificates, list them here
@@ -269,7 +269,7 @@ modules:
     oauth_dialog: false
     # Web Socket eims port by default 443
     ws_port: 443
-    # Web Socket outside (here integrated service) resource by default "/ws/api/v2"
+    # Web Socket outside (here host service) resource by default "/ws/api/v2"
     ws_resource: "/ws/api/v2"
     # system bot nick
     bot_nick: "EIMSBot"
@@ -327,7 +327,7 @@ modules:
   mod_http_api:
     default_version: 2
   mod_http_eims_api:
-    redirect_uri: "/iservice/server_auth"
+    redirect_uri: "/hservice/server_auth"
   mod_http_upload:
     #name: "Upload"
     docroot: /Path/eims/pv/upload
@@ -457,12 +457,12 @@ modules:
     resume_timeout: 10
   mod_vcard: {}
   mod_eims_filter:
-    except_from: ["admin","iservice","iservice.eng"]
+    except_from: ["admin","hservice","hservice.eng"]
     filter_regex: ["http:\\/\\/[^\\s]*", "https:\\/\\/[^\\s]*", "www\\.[^\\s]*", "www\\.[^\\s]*", "[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}" ]
-    except_replace: [ "https:\\/\\/[a-zA-Z1-9\\.]*\\.iservice\\.com", "https://t\\.me/iservice", "https://www.reddit.com/r/iserviceExchange/",
-                     "https://www.linkedin.com/company/Iservice", "https://twitter.com/Iserviceexchange", "https://t.me/ru_iservice",
-                     "https://t.me/cn_iservice", "https://t.me/IserviceOfficialChat","https://iservice.zendesk.com/hc/en-us",
-                      "support@iservice\\.com", "compliance@iservice\\.com" ]
+    except_replace: [ "https:\\/\\/[a-zA-Z1-9\\.]*\\.hservice\\.com", "https://t\\.me/hservice", "https://www.reddit.com/r/hserviceExchange/",
+                     "https://www.linkedin.com/company/hservice", "https://twitter.com/hserviceexchange", "https://t.me/ru_hservice",
+                     "https://t.me/cn_hservice", "https://t.me/hserviceOfficialChat","https://hservice.zendesk.com/hc/en-us",
+                      "support@hservice\\.com", "compliance@hservice\\.com" ]
   mod_pottymouth:
     check_fun: check_banword_only #or check_banword - for old case
     blacklists:

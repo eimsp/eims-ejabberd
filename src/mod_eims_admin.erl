@@ -46,7 +46,7 @@ cmds() -> %% valid admin commands
 		#cmd{name = ?unban, doc = <<"[nick | jid] [\"all\" for unban main account using subaccount`s nick or jid] = unban account">>, deep = 3, default = [ ], acl = admin},
 		#cmd{name = ?banned, doc = <<" = list of banned users">>, acl = admin},
 %%		#cmd{name = ?tv, doc = <<"[24h | 7d | 30d | all] = trade volumes last 24 hours or 7 days or 30 days or all time">>, default = [help], deep = 2, acl = all, broadcast = true},
-		#cmd{name = ?iserv_auth, doc = <<"[scope] = url for integrated service authorization">>, deep = 2, default = [<<"block_trade:read_write account:read">>], acl = moderator},
+		#cmd{name = ?iserv_auth, doc = <<"[scope] = url for host service authorization">>, deep = 2, default = [<<"block_trade:read_write account:read">>], acl = moderator},
 		#cmd{name = ?user, doc = <<"[nick | jid] = account info or [set] [nick] = set own nick">>, default = [], deep = 3, acl = moderator, data = []},
 	  #cmd{name = ?account, doc = <<"[role] [admin | user | none] [jid | nick]= add role ">>, default = [], deep = 4, acl = moderator, data = []},
 		#cmd{name = ?edit, doc = <<"[text] = edit last message to new message">>, deep = 2, acl = all},
@@ -56,7 +56,7 @@ cmds() -> %% valid admin commands
 		#cmd{name = ?muc, doc = <<"[priv | pub | del] [title | room_node](delete if del or create room as private or public)">>,
 			default = [<<"priv">>, <<>>], deep = 3, acl = admin},
 		#cmd{name = ?file_rm, doc = <<"[url] (delete uploaded file by url)">>, deep = 2, acl = moderator},
-		#cmd{name = ?iserv_sub, doc = <<"[channel] (subscribe to the integrated service channel)">>, deep = 2, acl = moderator, broadcast = false, data = #{access_token => true}},
+		#cmd{name = ?iserv_sub, doc = <<"[channel] (subscribe to the host service channel)">>, deep = 2, acl = moderator, broadcast = false, data = #{access_token => true}},
 		#cmd{name = ?upd, doc = <<"$[command] [text | command] = update info command or alias for other command\n/upd$[command] =  delete command">>, default = [del], deep = 3, acl = admin} |
 		mdrfq_umarket:cmd()].
 
