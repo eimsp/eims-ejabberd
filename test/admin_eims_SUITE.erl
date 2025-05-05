@@ -515,10 +515,10 @@ member_story(Config) ->
 			[do_enter_room(Client, RoomJid, Nick) || {Client, Nick, _} <- Users],
 			{_, NewBobNick, _} = lists:keyfind(BobJid, 1, mod_muc_admin:get_room_occupants(Room, RoomHost)), %% get "whale" nick
 			[escalus:wait_for_stanzas(C, 2) || C <- Clients],
-			send(Alice, escalus_stanza:groupchat_to(RoomJid, <<"/", ?b(?iserv_auth)>>)),
+			send(Alice, escalus_stanza:groupchat_to(RoomJid, <<"/", ?b(?hserv_auth)>>)),
 			#message{body = [#text{data = <<"https:", _/binary>>}]} = xmpp:decode(escalus:wait_for_stanza(Alice)),
 
-			send(Bob, escalus_stanza:groupchat_to(RoomJid, <<"/", ?b(?iserv_auth)>>)),
+			send(Bob, escalus_stanza:groupchat_to(RoomJid, <<"/", ?b(?hserv_auth)>>)),
 			#message{body = [#text{data = <<"You do not have access ", _/binary>>}]} = xmpp:decode(escalus:wait_for_stanza(Bob)),
 
 			send(Alice, escalus_stanza:groupchat_to(RoomJid, <<"/", ?b(?admin), " fakenick">>)),
@@ -580,7 +580,7 @@ eims_token_story(Config) ->
 			application:set_env(ejabberd, refresh_token_http_code, 200),
 			do_enter_room(Alice, RoomJid, AliceNick),
 			escalus:wait_for_stanzas(Alice, 1),
-			send(Alice, escalus_stanza:groupchat_to(RoomJid, <<"/", ?b(?iserv_auth)>>)),
+			send(Alice, escalus_stanza:groupchat_to(RoomJid, <<"/", ?b(?hserv_auth)>>)),
 			#message{body = [#text{data = <<"https:", _/binary>>}]} = xmpp:decode(escalus:wait_for_stanza(Alice)),
 			AuthNonce = eims:get_tokens(AliceJID = jid:decode(AliceJid)),
 			?assert(is_integer(AuthNonce)),
@@ -605,7 +605,7 @@ eims_filter_story(Config) ->
 	RoomJid = do_test_room_jid(),
 	[AliceNick, BobNick] = [escalus_config:get_ct({escalus_users, U, nick}) || U <- [alice, bob]],
 	Link = <<"http://fake.com">>,
-	IServLink = <<"https://test.hservice.com">>,
+	HServLink = <<"https://test.hservice.com">>,
 	escalus:story(Config, [{alice, 1}, {bob, 1}],
 		fun(#client{jid = _AliceJid} = Alice,
 			#client{jid = _BobJid} = Bob) ->
@@ -616,13 +616,13 @@ eims_filter_story(Config) ->
 			send(Bob, escalus_stanza:groupchat_to(RoomJid, Link)),
 			[escalus:assert(is_groupchat_message, [<<"[bot removed link]">>], escalus:wait_for_stanza(Client)) || Client <- Clients],
 
-			send(Bob, escalus_stanza:groupchat_to(RoomJid, <<IServLink/binary, "@attacker.com ", IServLink/binary>>)),
-			[escalus:assert(is_groupchat_message, [<<"[bot removed link] ", IServLink/binary>>], escalus:wait_for_stanza(Client)) || Client <- Clients],
+			send(Bob, escalus_stanza:groupchat_to(RoomJid, <<HServLink/binary, "@attacker.com ", HServLink/binary>>)),
+			[escalus:assert(is_groupchat_message, [<<"[bot removed link] ", HServLink/binary>>], escalus:wait_for_stanza(Client)) || Client <- Clients],
 
-			send(Bob, escalus_stanza:groupchat_to(RoomJid, IServLink)),
-			[IServLinkMsg, _] = LinkMsgs = [escalus:wait_for_stanza(Client) || Client <- Clients],
-			[escalus:assert(is_groupchat_message, [IServLink], LinkMsg) || LinkMsg <- LinkMsgs],
-			?assert(<<>> /= eims:get_origin_id(#archive_msg{packet = IServLinkMsg})),
+			send(Bob, escalus_stanza:groupchat_to(RoomJid, HServLink)),
+			[HServLinkMsg, _] = LinkMsgs = [escalus:wait_for_stanza(Client) || Client <- Clients],
+			[escalus:assert(is_groupchat_message, [HServLink], LinkMsg) || LinkMsg <- LinkMsgs],
+			?assert(<<>> /= eims:get_origin_id(#archive_msg{packet = HServLinkMsg})),
 
 			send(Alice, escalus_stanza:groupchat_to(RoomJid, Link)),
 			[escalus:assert(is_groupchat_message, [Link], escalus:wait_for_stanza(Client)) || Client <- Clients]

@@ -53,7 +53,7 @@ end_per_group(_GroupName, Config) ->
 	Config.
 
 
-init_per_testcase(iserv_token_story, Config) ->
+init_per_testcase(hserv_token_story, Config) ->
 	Intervals = [{K, application:get_env(ejabberd, K, V)} || {K, V} <-
 		[{refresh_token_interval, 800}, {access_token_interval, 90}]],
 	application:set_env(ejabberd, refresh_token_interval, 2),
@@ -92,12 +92,12 @@ init_per_testcase(CaseName, Config) ->
 
 end_per_testcase(eims_custom_story, Config) ->
 	[mnesia:dirty_delete(eims_cmd, Cmd) || Cmd <- [<<"test_text">>, <<"test_custom">>]],
-	end_per_testcase(iserv_eims_story, Config);
+	end_per_testcase(hserv_eims_story, Config);
 end_per_testcase(eims_token_story, Config) ->
 	[application:set_env(ejabberd, K, config(K, Config))
 		|| K <- [refresh_token_interval, access_token_interval]],
 	application:set_env(ejabberd, refresh_token_http_code, 200),
-	end_per_testcase(iserv_eims_story, Config);
+	end_per_testcase(hserv_eims_story, Config);
 end_per_testcase(CaseName, Config) ->
 	meck:unload(),
 	escalus:end_per_testcase(CaseName, Config).
@@ -106,7 +106,7 @@ end_per_testcase(CaseName, Config) ->
 %% admin EIMS tests
 %%--------------------------------------------------------------------
 
-iserv_eims_story(Config) ->
+hserv_eims_story(Config) ->
 	RoomJid = do_test_room_jid(),
 	[AliceNick, BobNick, _ClaraNick] = [escalus_config:get_ct({escalus_users, U, nick}) || U <- [alice, bob, clara]],
 	_WhaleNodes = [BobNode, ClaraNode] = [escalus_config:get_ct({escalus_users, U, username}) || U <- [bob, clara]],
@@ -294,7 +294,7 @@ iserv_eims_story(Config) ->
 			ok
 		end).
 
-iserv_token_story(Config) ->
+hserv_token_story(Config) ->
 	RoomJid = do_test_room_jid(),
 	Host = escalus_config:get_ct(ejabberd_domain),
 	_Nicks = [AliceNick, BobNick] = [escalus_config:get_ct({escalus_users, U, nick}) || U <- [alice, bob]],
@@ -328,7 +328,7 @@ iserv_token_story(Config) ->
 			application:set_env(ejabberd, refresh_token_http_code, 200),
 			do_enter_room(Alice, RoomJid, AliceNick),
 			escalus:wait_for_stanzas(Alice, 1),
-			send(Alice, escalus_stanza:groupchat_to(RoomJid, <<"/", ?b(?iserv_auth)>>)),
+			send(Alice, escalus_stanza:groupchat_to(RoomJid, <<"/", ?b(?hserv_auth)>>)),
 			#message{body = [#text{data = <<"https:", _/binary>>}]} = xmpp:decode(escalus:wait_for_stanza(Alice)),
 			AuthNonce = eims:get_tokens(AliceJID = jid:decode(AliceJid)),
 			?assert(is_integer(AuthNonce)),
@@ -353,7 +353,7 @@ iserv_token_story(Config) ->
 		end).
 
 
-iserv_custom_story(Config) ->
+hserv_custom_story(Config) ->
 	RoomJid = do_test_room_jid(),
 	[AliceNick, BobNick] = [escalus_config:get_ct({escalus_users, U, nick}) || U <- [alice, bob]],
 	escalus:story(Config, [{alice, 1}, {bob, 1}],

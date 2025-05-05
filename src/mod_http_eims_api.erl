@@ -275,7 +275,7 @@ execute_command(blacklist, Args, _Req, _Version) ->
         _ -> {400, #{<<"error">> => <<"access denied">>}}
     end;
 execute_command(server_auth, Args, _Req, _Version) ->
-    eims:check_sync_iserv(eims_rest:auth_command(maps:from_list(Args)));
+    eims:check_sync_hserv(eims_rest:auth_command(maps:from_list(Args)));
 execute_command(muc_list, Args, _Req, _Version) ->
     Host = case proplists:get_value(host, Args, undefined) of
                <<"conference.", _/binary>> = H ->

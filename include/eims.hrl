@@ -57,7 +57,7 @@
 -define(ban, <<"ban">>).
 -define(unban, <<"unban">>).
 -define(banned, <<"banned">>).
--define(iserv_auth, <<"iserv_auth">>).
+-define(hserv_auth, <<"hserv_auth">>).
 -define(user, <<"user">>).
 -define(account, <<"account">>).
 -define(edit, <<"edit">>).
@@ -67,7 +67,7 @@
 -define(muc, <<"muc">>).
 -define(upd, <<"upd">>).
 -define(file_rm, <<"file_rm">>).
--define(iserv_sub, <<"iserv_sub">>).
+-define(hserv_sub, <<"hserv_sub">>).
 
 -record(eims_storage, {jid, nick = [], id = [], main_account_id = [], email = [], main_email = [],
 							system_name = [], main_system_name = [], roles = [], access = allow, tstamp = 0}).

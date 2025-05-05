@@ -1,7 +1,7 @@
 -ifndef(FIX_FIELDS_HRL).
 -define(FIX_FIELDS_HRL, true).
 
--record(fix_field, {fix_name = [] :: binary(), iserv_name = [] :: binary(), tag = [] :: integer(), datatype = binary}).
+-record(fix_field, {fix_name = [] :: binary(), hserv_name = [] :: binary(), tag = [] :: integer(), datatype = binary}).
 
 -type quote_req_leg() :: #{'LegPrice' => nil() | number(),
 							'LegSymbol' => binary(),

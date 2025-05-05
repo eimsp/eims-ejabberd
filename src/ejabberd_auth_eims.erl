@@ -46,7 +46,7 @@ store_type(_) -> external.
 check_password(User, AuthzId, _Server, _Password) when AuthzId =/= <<>> andalso AuthzId =/= User ->
     {nocache, false};
 %% Add here check password for external host service
-check_password(User, AuthzId, Server, <<"iserv-web-app;", Password/binary>>) ->
+check_password(User, AuthzId, Server, <<"hserv-web-app;", Password/binary>>) ->
     case mod_adhoc_eims:is_banned(jid:make(User, Server)) of
         true -> {nocache, false};
         false -> check_password_extauth(User, AuthzId, Server, Password)

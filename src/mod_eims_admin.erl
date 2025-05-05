@@ -46,7 +46,7 @@ cmds() -> %% valid admin commands
 		#cmd{name = ?unban, doc = <<"[nick | jid] [\"all\" for unban main account using subaccount`s nick or jid] = unban account">>, deep = 3, default = [ ], acl = admin},
 		#cmd{name = ?banned, doc = <<" = list of banned users">>, acl = admin},
 %%		#cmd{name = ?tv, doc = <<"[24h | 7d | 30d | all] = trade volumes last 24 hours or 7 days or 30 days or all time">>, default = [help], deep = 2, acl = all, broadcast = true},
-		#cmd{name = ?iserv_auth, doc = <<"[scope] = url for host service authorization">>, deep = 2, default = [<<"block_trade:read_write account:read">>], acl = moderator},
+		#cmd{name = ?hserv_auth, doc = <<"[scope] = url for host service authorization">>, deep = 2, default = [<<"block_trade:read_write account:read">>], acl = moderator},
 		#cmd{name = ?user, doc = <<"[nick | jid] = account info or [set] [nick] = set own nick">>, default = [], deep = 3, acl = moderator, data = []},
 	  #cmd{name = ?account, doc = <<"[role] [admin | user | none] [jid | nick]= add role ">>, default = [], deep = 4, acl = moderator, data = []},
 		#cmd{name = ?edit, doc = <<"[text] = edit last message to new message">>, deep = 2, acl = all},
@@ -56,7 +56,7 @@ cmds() -> %% valid admin commands
 		#cmd{name = ?muc, doc = <<"[priv | pub | del] [title | room_node](delete if del or create room as private or public)">>,
 			default = [<<"priv">>, <<>>], deep = 3, acl = admin},
 		#cmd{name = ?file_rm, doc = <<"[url] (delete uploaded file by url)">>, deep = 2, acl = moderator},
-		#cmd{name = ?iserv_sub, doc = <<"[channel] (subscribe to the host service channel)">>, deep = 2, acl = moderator, broadcast = false, data = #{access_token => true}},
+		#cmd{name = ?hserv_sub, doc = <<"[channel] (subscribe to the host service channel)">>, deep = 2, acl = moderator, broadcast = false, data = #{access_token => true}},
 		#cmd{name = ?upd, doc = <<"$[command] [text | command] = update info command or alias for other command\n/upd$[command] =  delete command">>, default = [del], deep = 3, acl = admin} |
 		mdrfq_umarket:cmd()].
 
@@ -601,7 +601,7 @@ exec_cmd(#cmd{name = ?help, args = [Name, Doc], context = #message{} = Pkt, data
 				<<"access denied">>
 		end,
 	eims:send_edit(Pkt, <<" /", Name/binary, " ", Text/binary>>);
-exec_cmd(#cmd{name = ?iserv_auth, args = [Scope], context = #message{from = From, to = To} = Pkt}) ->
+exec_cmd(#cmd{name = ?hserv_auth, args = [Scope], context = #message{from = From, to = To} = Pkt}) ->
 	eims:set_token_expired_time(jid:remove_resource(From), Nonce = eims:sys_time()),
 	StateMap = #{jid => jid:encode(From), nonce => Nonce},
 	StateMap2 = case To of undefined -> StateMap; _ -> StateMap#{groupchat => jid:encode(To)} end,
@@ -669,7 +669,7 @@ exec_cmd(#cmd{name = ?user, args = [NickJid], context = #message{
 				<<"User ", NickJid/binary, " has not been found">>
 		end,
 	eims:send_edit(Pkt, Body);
-exec_cmd(#cmd{name = ?iserv_sub, args = [Channel], data = #{access_token := Token},
+exec_cmd(#cmd{name = ?hserv_sub, args = [Channel], data = #{access_token := Token},
 	context = #message{from = #jid{luser = LUser, lserver = LHost}, to = #jid{luser = Room, lserver = RoomHost} = To} = Pkt}) ->
 	spawn(
 		fun() ->
@@ -946,8 +946,8 @@ acl(#cmd{name = ?help, context = #message{}, data = [], broadcast = false} = Cmd
 		           end
 	      end,
 	Cmd#cmd{data = Acl};
-acl(#cmd{name = ?iserv_auth, data = [], context = #message{from = #jid{luser = <<"whale.", _/binary>>}} = Pkt, broadcast = false} = _Cmd) ->
-	eims:send_edit(Pkt, <<"You do not have access to /iserv_auth command">>),
+acl(#cmd{name = ?hserv_auth, data = [], context = #message{from = #jid{luser = <<"whale.", _/binary>>}} = Pkt, broadcast = false} = _Cmd) ->
+	eims:send_edit(Pkt, <<"You do not have access to /hserv_auth command">>),
 	{error, access_denied};
 acl(#cmd{name = Name, data = Data, context = Pkt, custom = Custom} = Cmd) when not is_record(Data, cmd) ->
 	case acl(Cmd#cmd{data = Cmd}) of

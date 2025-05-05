@@ -206,7 +206,7 @@ get_access_token(Jid) ->
 			Token;
 		#eims_auth{time = _Time} = AuthData ->
 %%        #auth{time = Time} = AuthData when Now - Time < 899*1000 ->
-			case eims:check_sync_iserv(fun() -> refresh_token(Jid, AuthData) end) of
+			case eims:check_sync_hserv(fun() -> refresh_token(Jid, AuthData) end) of
 				{_, #eims_auth{access_token = Token}} -> Token;
 				Err -> Err
 			end;
@@ -268,7 +268,7 @@ get_trade_volumes_req(#jid{lserver = _Host} = Jid) ->
 	get_trade_volumes_req(Jid, <<"false">>).
 get_trade_volumes_req(#jid{lserver = _Host}, Extended) ->
 %%	check_request(get, Host, ?URI_TV, [], []).
-	check_request(get, {iserv_host, eims:hservice_host()}, ?URI_TRADE_VOLUMES, [{<<"extended">>, Extended}], []). %% TODO temporary. Get itegrated service host from ejabberd.yml
+	check_request(get, {hserv_host, eims:hservice_host()}, ?URI_TRADE_VOLUMES, [{<<"extended">>, Extended}], []). %% TODO temporary. Get itegrated service host from ejabberd.yml
 
 
 
@@ -289,17 +289,17 @@ private_request(#jid{} = Jid, Uri, Args) ->
 			private_request(Jid, Uri, Args, Token)
 	end.
 
-check_request(get, {iserv_host, ISHost}, Uri, Args, Headers) ->
+check_request(get, {hserv_host, ISHost}, Uri, Args, Headers) ->
 	Url = uri_string:normalize(#{scheme => "https", host => ISHost,
 		path => Uri, query => uri_string:compose_query(Args)}),
 	check_request({Url, Headers}, get);
 check_request(get, Host, Uri, Args, Headers) ->
 	#{Host := ISHost} = eims:connection_opts(),
-	check_request(get, {iserv_host, ISHost}, Uri, Args, Headers).
+	check_request(get, {hserv_host, ISHost}, Uri, Args, Headers).
 check_request(Request) ->
 	check_request(Request, get).
 check_request(Request, Method) ->
-	eims:check_sync_iserv(fun() -> request(Method, Request) end).
+	eims:check_sync_hserv(fun() -> request(Method, Request) end).
 
 request(Method, Request) ->
 	request(Method, Request, fun(Body) -> {ok, 200, eims:decode_json(Body)} end).

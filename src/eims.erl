@@ -572,17 +572,17 @@ get_eims_element(Name, #xmlel{children = Subels}) ->
 		_ -> []
 	end.
 
-check_sync_iserv(Fun) ->
-	check_sync_iserv(Fun, 3).
-check_sync_iserv(_Fun, 0) ->
+check_sync_hserv(Fun) ->
+	check_sync_hserv(Fun, 3).
+check_sync_hserv(_Fun, 0) ->
 	{error, overload};
-check_sync_iserv(Fun, Count) ->
+check_sync_hserv(Fun, Count) ->
 	case throttle:check(hservice_rate, hservice_request) of
 		rate_not_set -> {error, rate_not_set};
 		{ok, _, _} -> Fun();
 		{limit_exceeded, 0, DelayTime} ->
 			timer:sleep(round(DelayTime*1000)+1),
-			check_sync_iserv(Fun, Count-1)
+			check_sync_hserv(Fun, Count-1)
 	end.
 
 drop_tokens(Jid) ->
@@ -601,10 +601,10 @@ send_delay_check({Jid, Data}, Fun, Interval) when is_binary(Jid) ->
 	send_delay_check({jid:from_string(Jid), Data}, Fun, Interval);
 send_delay_check({#jid{luser = User, lserver = Host} = Jid, Data}, Fun, Interval) ->
 	TRef = erlang:send_after(Interval, eims_scheduler,
-		{eims_send, {User, Host}, check_iserv_decorator({Jid, Data}, Fun)}),
+		{eims_send, {User, Host}, check_hserv_decorator({Jid, Data}, Fun)}),
 	set_tokens(Jid, Data, TRef).
 
-check_iserv_decorator({#jid{luser = User, lserver = Host}, _} = FullData, Fun) ->
+check_hserv_decorator({#jid{luser = User, lserver = Host}, _} = FullData, Fun) ->
 	fun(Data) ->
 		case ejabberd_sm:get_user_resources(User, Host) of
 			[] -> ok;
