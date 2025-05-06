@@ -16,7 +16,10 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: erlang:22.0.7
+      image: erlang:otp-25.2.2-openssl-3.0.8-ubuntu-20.04
+      options: --user 1000:1000
+      ports:
+        - 5432:5432
 
     steps:
     - uses: actions/checkout@v4

@@ -14,7 +14,7 @@ It is designed to be integrated with third-party systems (host service). EIMS in
 2. Install Erlang/OTP version > 25, ejabberd (to eims/ejabberd), install necessary additional 3rd-party modules for ejabberd (on admin discretion)
 3. Use yml-sample (ejabberd.yml) from eims/eims-ejabberd/etc to configure ejabberd for your environment
 4. Run ./eims/eims-ejabberd/setup-dev.sh script to create symlinks and copy necessary files to ejabberd dir (./ejabberd).
-5. Register "chat" application in the backend of Integrated Service. Possibly, chat application needs special permission to not show "allow/deny" dialog.
+5. Register "chat" application in the backend of Host Service. Possibly, chat application needs special permission to not show "allow/deny" dialog.
 6. Install Nginx with eims.conf (from eims/eims-ejabberd/etc) in dir /etc/nginx/conf.d, eims/eims-ejabberd/www is a dir for Nginx with Converse.js
 7. Create docker image for PostgresDB using command "docker build --no-cache -t eims/psql:145" in dir eims-ejabberd.
 
@@ -40,22 +40,30 @@ Start application:
    
     ./ejabberd/rebar3 shell --name ejabberd@localhost      
 
-Nginx must be configured properly for ports 443 and 80 to pass the challenge request 
-to ejabberd. Worth noting, ejabberd can download and install certificates from 
+Nginx must be configured properly for ports 443 and 80 to pass the challenge request to ejabberd and 
+to the correct locations (see eims.conf). In production, make sure that the firewall settings allow traffic on ports 80, 443, 5280 and 5443.
+
+### SSL/TLS certificates
+
+SSL/TLS certificates are required for secure communication between XMPP clients and ejabberd.
+You can use self-signed certificates for testing purposes or obtain valid certificates from a 
+trusted Certificate Authority (CA) like Let's Encrypt for production environments. Worth noting, ejabberd can download and install certificates from 
 letsencrypt itself it is needed at a minimum for a production version.
 
 ##  Configuration EIMS for your Host Service (hservice)
 
-* Name: eims
+EIMS is designed to be integrated with a host service. The host service must provide an API for EIMS to communicate with it using websockets.
+The host service can also provide a way to authenticate users of this service and authorize them to access the chat application.
+
+The following parameters are required for EIMS to work application "Chats" (application for p2p and multi-user chats)  in a production environment:
 * Domain: eims.domain 
-* URLs: https://eims.domain/ for Converse.js and https://eims.domain/cjac for CJaC 
+* URLs: https://eims.domain/ for Converse.js and https://eims.domain/cjac for CJaC  
 * Host Service URLs: https://hservice.com/api
 * Redirect URLs: https://eims.domain/hservice/server_auth 
 
-for local testing (config etc/ejabberd.yml, then ejabberd also handles http  is not used), following params can be used:
-* Name: eims
+for local testing any applications (configuration in eims-ejabberd/etc/ejabberd.yml), following params can be used:
 * Domain: localhost
-* URLs: https://localhost/ for Converse.js and https://localhost/cjac for CJaC
-* Integrayed Service URLs: https://hservice.com/api
+* URLs: https://localhost/ for Converse.js, https://localhost/cjac for CJaC etc
+* Host Service URLs: https://hservice.com/api
 * Redirect URLs: https://localhost/hservice/server_auth 
 
