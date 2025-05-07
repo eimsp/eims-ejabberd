@@ -109,8 +109,9 @@ CREATE INDEX i_username_timestamp ON archive USING btree (username, timestamp);
 CREATE INDEX i_username_peer ON archive USING btree (username, peer);
 CREATE INDEX i_username_bare_peer ON archive USING btree (username, bare_peer);
 CREATE INDEX i_timestamp ON archive USING btree (timestamp);
-CREATE INDEX i_username_origin_id ON archive USING btree (username, origin_id);
-CREATE INDEX i_username_retract_id ON archive USING btree (username, retract_id);
+CREATE INDEX i_archive_username_origin_id ON archive USING btree (username, origin_id);
+-- CREATE INDEX i_username_origin_id ON archive USING btree (username, origin_id);
+CREATE INDEX i_archive_username_retract_id ON archive USING btree (username, retract_id);
 
 CREATE TABLE archive_prefs (
     username text NOT NULL PRIMARY KEY,

@@ -29,16 +29,17 @@ You can set up ejabberd without installing in your system:
     make dev
 
 
-Start DBS:
+Start DBS in dir eims/eims-ejabberd:
     Rename docker-compose-dev.yml to docker-compose.yml
+    
     docker-compose up -d
 
-Start application:  
+Start application in dir eims/ejabberd:  
 
-    ./ejabberd/start-dev.sh     
+    ./start-dev.sh     
  or 
    
-    ./ejabberd/rebar3 shell --name ejabberd@localhost      
+    rebar3 shell --name ejabberd@localhost      
 
 Nginx must be configured properly for ports 443 and 80 to pass the challenge request to ejabberd and 
 to the correct locations (see eims.conf). In production, make sure that the firewall settings allow traffic on ports 80, 443, 5280 and 5443.
