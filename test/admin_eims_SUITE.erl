@@ -253,10 +253,13 @@ admin_eims_story(Config) ->
 				eims:select_history({Room, RoomHost}),
 
 			#archive_msg{packet = EditMsg} = eims_db:edit_mam_msg_by_id({Room, RoomHost}, Id, EditText),
-			#message{body = [#text{data = EditText}]} = xmpp:decode(EditMsg),
+			EM=#message{body = [#text{data = EditText}]} = xmpp:decode(EditMsg),
+			ct:sleep(1000),
 			#archive_msg{packet = GetMsg} =
 				wait_for_result(fun() -> eims_db:get_mam_msg_by_id({Room, RoomHost}, Id) end, fun(#archive_msg{}) -> true; (_) -> false end),
-			EditMsg = #message{body = [#text{data = _Text}]} = xmpp:decode(GetMsg),
+			ct:print("EDIT: ~p, ~p", [EditMsg, GetMsg]),
+			EM = #message{body = [#text{data = _Text}]} = xmpp:decode(GetMsg),
+
 
 			NewEditTxt = <<"new edit message text">>,
 			send(Bob, escalus_stanza:groupchat_to(RoomJid, <<"/", ?b(?edit), " ", NewEditTxt/binary>>)),
@@ -1229,6 +1232,7 @@ pubsub_story(Config) ->
 			escalus:assert(is_groupchat_message, [EditText], escalus:wait_for_stanza(Bob)),
 			[_] = wait_for_list(fun() -> eims_db:select_by_retract_id(groupchat, {Room, RoomHost}, EditOriginId) end, 1),
 			[_] = wait_for_list(fun() -> eims_db:select_by_origin_id(chat, {AliceNode, Server}, OriginId) end, 1),
+			ct:sleep(1000),
 			[_] = PubSubArcPkts = wait_for_list(fun() -> eims_db:select_by_origin_id(chat, {AliceNode, Server}, OriginId) end, 1),
 			[_] = PubSubArcPkts = wait_for_list(fun() -> eims_db:select_by_retract_id(chat, {AliceNode, Server}, EditOriginId) end, 1),
 			EventPkt2 = #message{body = [#text{data = EditText}]} = eims:unwrap_mucsub_message(xmpp:decode(escalus:wait_for_stanza(Alice))),
